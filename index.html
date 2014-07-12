@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>GitHub Webhook/Service event editor</title>
+    <meta name="author" content="Chris Armstrong" />
+    <meta name="keywords" content="GitHub API, GitHub Webhook, GitHub event" />
+    <meta name="description" content="Utility for editing the events a GitHub Webhook will react to." />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+    <script src="https://code.jquery.com/jquery-1.11.1.min.js" type="text/javascript"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+  </head>
+
+  <body>
+
+    <div class="container-fluid" style="padding-top:10px;">
+
+      <div class="col-xs-4">
+        <h2>GitHub Webhook/Service event editor</h2>
+        <p><strong>Why?</strong> Because the you can edit the events for a Webhook via the GitHub UI, but you can only edit the events for a service integration by using the GitHub API.... and that's lame.</p>
+
+        <p>Crafted with love by <a target="_blank" href="http://carmstrong.me">Chris Armstrong</a>.</p>
+
+        <div style="padding-top:5px;">
+          <h4>GitHub settings</h4>
+          <div class="form-group">
+            <label for="token">GitHub OAuth token</label>
+            <input type="text" class="form-control" id="token" placeholder="asdf1234">
+          </div>
+
+          <div class="form-group">
+            <label for="repo">GitHub user/repository</label>
+            <input type="text" class="form-control" id="repo" placeholder="deis/deis">
+          </div>
+
+          <button type="button" class="btn btn-primary" id="fetch">Fetch</button>
+
+          <div id="error" class="alert alert-danger hidden" role="alert" style="margin-top:10px;">No dice... do you have access?</div>
+          <div id="success" class="alert alert-success hidden" role="alert" style="margin-top:10px;">Excellent work!</div>
+        </div>
+
+      </div>
+
+      <div class="hidden col-xs-2" id="hooks">
+        <h4>Configured hooks/services</h4>
+        <p>Existing hooks and services are listed here.
+          <a id="hook-link" target="_blank" href="">Create a hook</a> for <span id="repo-name"></span>.
+        </p>
+        <ul id="hooks-list" class="list-group">
+
+        </ul>
+      </div>
+
+      <div class="hidden col-xs-6" id="events">
+      <h4>Events</h4>
+        <div class="form-group">
+          <div>
+              <div class="checkbox">
+                  <label><input id="commit_comment" class="event-checkbox" type="checkbox"> CommitCommentEvent (Triggered when a commit comment is created.)</label>
+              </div>
+          </div>
+
+          <div>
+              <div class="checkbox">
+                  <label><input id="create" class="event-checkbox" type="checkbox"> CreateEvent (Represents a created repository, branch, or tag.)</label>
+              </div>
+          </div>
+
+          <div>
+              <div class="checkbox">
+                  <label><input id="delete" class="event-checkbox" type="checkbox"> DeleteEvent (Represents a deleted branch or tag.)</label>
+              </div>
+          </div>
+
+          <div>
+              <div class="checkbox">
+                  <label><input id="deployment" class="event-checkbox" type="checkbox"> DeploymentEvent (Represents a deployment.)</label>
+              </div>
+          </div>
+
+          <div>
+              <div class="checkbox">
+                  <label><input id="deployment_status" class="event-checkbox" type="checkbox"> DeploymentStatusEvent (Represents a deployment status.)</label>
+              </div>
+          </div>
+
+          <div>
+              <div class="checkbox">
+                  <label><input id="download" class="event-checkbox" type="checkbox"> DownloadEvent (Triggered when a new download is created.)</label>
+              </div>
+          </div>
+
+          <div>
+              <div class="checkbox">
+                  <label><input id="follow" class="event-checkbox" type="checkbox"> FollowEvent (Triggered when a user follows another user.)</label>
+              </div>
+          </div>
+
+          <div>
+              <div class="checkbox">
+                  <label><input id="fork" class="event-checkbox" type="checkbox"> ForkEvent (Triggered when a user forks a repository.)</label>
+              </div>
+          </div>
+
+          <div>
+              <div class="checkbox">
+                  <label><input id="fork_apply" class="event-checkbox" type="checkbox"> ForkApplyEvent (Triggered when a patch is applied in the Fork Queue.)</label>
+              </div>
+          </div>
+
+          <div>
+              <div class="checkbox">
+                  <label><input id="gist" class="event-checkbox" type="checkbox"> GistEvent (Triggered when a Gist is created or updated.)</label>
+              </div>
+          </div>
+
+          <div>
+              <div class="checkbox">
+                  <label><input id="gollum" class="event-checkbox" type="checkbox"> GollumEvent (Triggered when a Wiki page is created or updated.)</label>
+              </div>
+          </div>
+
+          <div>
+              <div class="checkbox">
+                  <label><input id="issue_comment" class="event-checkbox" type="checkbox"> IssueCommentEvent (Triggered when an issue comment is created.)</label>
+              </div>
+          </div>
+
+          <div>
+              <div class="checkbox">
+                  <label><input id="issues" class="event-checkbox" type="checkbox"> IssuesEvent (Triggered when an issue is created, closed or reopened.)</label>
+              </div>
+          </div>
+
+          <div>
+              <div class="checkbox">
+                  <label><input id="member" class="event-checkbox" type="checkbox"> MemberEvent (Triggered when a user is added as a collaborator to a repository.)</label>
+              </div>
+          </div>
+
+          <div>
+              <div class="checkbox">
+                  <label><input id="page_build" class="event-checkbox" type="checkbox"> PageBuildEvent (Represents an attempted build of a GitHub Pages site, whether successful or not.)</label>
+              </div>
+          </div>
+
+          <div>
+              <div class="checkbox">
+                  <label><input id="public" class="event-checkbox" type="checkbox"> PublicEvent (Triggered when a private repository is open sourced. Without a doubt: the best GitHub event.)</label>
+              </div>
+          </div>
+
+          <div>
+              <div class="checkbox">
+                  <label><input id="pull_request" class="event-checkbox" type="checkbox"> PullRequestEvent (Triggered when a pull request is created, closed, reopened or synchronized.)</label>
+              </div>
+          </div>
+
+          <div>
+              <div class="checkbox">
+                  <label><input id="pull_request_review_comment" class="event-checkbox" type="checkbox"> PullRequestReviewCommentEvent (Triggered when a comment is created on a portion of the unified diff of a pull request.)</label>
+              </div>
+          </div>
+
+          <div>
+              <div class="checkbox">
+                  <label><input id="push" class="event-checkbox" type="checkbox"> PushEvent (Triggered when a repository branch is pushed to.)</label>
+              </div>
+          </div>
+
+          <div>
+              <div class="checkbox">
+                  <label><input id="release" class="event-checkbox" type="checkbox"> ReleaseEvent (Triggered when a release is published.)</label>
+              </div>
+          </div>
+
+          <div>
+              <div class="checkbox">
+                  <label><input id="status" class="event-checkbox" type="checkbox"> StatusEvent (Triggered when the status of a Git commit changes.)</label>
+              </div>
+          </div>
+
+          <div>
+              <div class="checkbox">
+                  <label><input id="team_add" class="event-checkbox" type="checkbox"> TeamAddEvent (Triggered when a user is added to a team or when a repository is added to a team.)</label>
+              </div>
+          </div>
+
+          <div>
+              <div class="checkbox">
+                  <label><input id="watch" class="event-checkbox" type="checkbox"> WatchEvent (The WatchEvent is related to starring a repository, not watching. See this API blog post for an explanation.)</label>
+              </div>
+          </div>
+
+          <button type="button" class="btn btn-primary" id="update">Update</button>
+
+        </div>
+      </div>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>
